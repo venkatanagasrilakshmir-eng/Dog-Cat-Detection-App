@@ -47,51 +47,6 @@ The application provides:
 
 ---
 
-# 📁 Project Structure
-
-```plaintext
-Dog-Cat-Detection-App/
-│
-├── app.py
-├── train_model.py
-├── requirements.txt
-├── README.md
-│
-├── model/
-│   └── svm_model.pkl
-│
-├── dataset/
-│   ├── train/
-│   │   ├── cats/
-│   │   └── dogs/
-│   │
-│   └── test/
-│       ├── cats/
-│       └── dogs/
-│
-├── static/
-│   ├── css/
-│   │   └── style.css
-│   │
-│   ├── js/
-│   │   └── script.js
-│   │
-│   ├── uploads/
-│   │
-│   └── images/
-│       ├── bg.jpg
-│       ├── cat.png
-│       └── dog.png
-│
-├── templates/
-│   └── index.html
-│
-└── utils/
-    └── preprocess.py
-```
-
----
-
 # 🧠 Machine Learning Workflow
 
 ## Step 1 — Dataset Collection
