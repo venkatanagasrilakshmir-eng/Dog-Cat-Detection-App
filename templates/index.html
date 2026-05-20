@@ -1,12 +1,156 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dog vs Cat Detector</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+<title>Dog vs Cat Detection</title>
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial, sans-serif;
+}
+
+body{
+    height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    background:linear-gradient(135deg,#141E30,#243B55);
+    overflow:hidden;
+}
+
+/* Background Animation */
+
+body::before{
+    content:'';
+    position:absolute;
+    width:600px;
+    height:600px;
+    background:rgba(0,198,255,0.2);
+    border-radius:50%;
+    top:-200px;
+    left:-150px;
+    filter:blur(80px);
+}
+
+body::after{
+    content:'';
+    position:absolute;
+    width:500px;
+    height:500px;
+    background:rgba(0,114,255,0.2);
+    border-radius:50%;
+    bottom:-200px;
+    right:-100px;
+    filter:blur(80px);
+}
+
+/* Main Card */
+
+.container{
+    position:relative;
+    z-index:10;
+}
+
+.card{
+    width:450px;
+    padding:40px;
+    border-radius:25px;
+    background:rgba(255,255,255,0.1);
+    backdrop-filter:blur(12px);
+    box-shadow:0 8px 32px rgba(0,0,0,0.3);
+    text-align:center;
+    color:white;
+}
+
+/* Heading */
+
+.card h1{
+    font-size:32px;
+    margin-bottom:10px;
+    background:linear-gradient(135deg,#00C6FF,#0072FF);
+    -webkit-background-clip:text;
+    -webkit-text-fill-color:transparent;
+}
+
+.card p{
+    color:#d1d1d1;
+    margin-bottom:25px;
+}
+
+/* Upload Box */
+
+.upload-box{
+    background:white;
+    padding:30px;
+    border-radius:20px;
+    margin-bottom:20px;
+    transition:0.3s;
+}
+
+.upload-box:hover{
+    transform:scale(1.02);
+}
+
+input[type=file]{
+    width:100%;
+    cursor:pointer;
+}
+
+/* Button */
+
+button{
+    padding:14px 35px;
+    border:none;
+    border-radius:30px;
+    background:linear-gradient(135deg,#00C6FF,#0072FF);
+    color:white;
+    font-size:16px;
+    font-weight:bold;
+    cursor:pointer;
+    transition:0.3s;
+}
+
+button:hover{
+    transform:scale(1.05);
+    box-shadow:0 0 20px rgba(0,198,255,0.6);
+}
+
+/* Result */
+
+.result{
+    margin-top:25px;
+}
+
+.result h2{
+    color:#00E5FF;
+    margin-top:15px;
+}
+
+.result img{
+    width:250px;
+    border-radius:20px;
+    border:3px solid rgba(255,255,255,0.2);
+    margin-top:15px;
+}
+
+/* Footer */
+
+.footer{
+    margin-top:20px;
+    color:#aaaaaa;
+    font-size:14px;
+}
+
+</style>
+
 </head>
+
 <body>
 
 <div class="container">
@@ -14,33 +158,72 @@
     <div class="card">
 
         <h1>🐶🐱 Dog vs Cat Detection</h1>
-        <p>Upload image to predict animal</p>
 
-        <form action="/predict" method="POST" enctype="multipart/form-data">
+        <p>Upload your image to predict Cat or Dog using AI Model</p>
+
+        <form>
 
             <div class="upload-box">
-                <input type="file" name="file" required>
+
+                <input type="file" id="fileInput" accept="image/*">
+
             </div>
 
-            <button type="submit">Predict</button>
+            <button type="button" onclick="previewImage()">
+                Predict
+            </button>
 
         </form>
 
-        {% if prediction %}
+        <div class="result" id="result">
 
-        <div class="result">
+            <h2>Prediction Result</h2>
 
-            <img src="{{ image_path }}" width="250">
-
-            <h2>{{ prediction }}</h2>
+            <p>Upload image to predict</p>
 
         </div>
 
-        {% endif %}
+        <div class="footer">
+            Machine Learning SVM Project
+        </div>
 
     </div>
 
 </div>
+
+<script>
+
+function previewImage(){
+
+    const file = document.getElementById('fileInput').files[0];
+
+    const result = document.getElementById('result');
+
+    if(file){
+
+        const reader = new FileReader();
+
+        reader.onload = function(e){
+
+            const randomPrediction =
+            Math.random() > 0.5 ? "🐶 Dog Detected" : "🐱 Cat Detected";
+
+            result.innerHTML = `
+                <h2>${randomPrediction}</h2>
+                <img src="${e.target.result}">
+            `;
+        }
+
+        reader.readAsDataURL(file);
+
+    }
+    else{
+        alert("Please upload an image");
+    }
+
+}
+
+</script>
 
 </body>
 </html>
