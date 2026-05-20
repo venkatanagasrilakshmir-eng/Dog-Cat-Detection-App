@@ -5,7 +5,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Real-Time Dog vs Cat Detection</title>
+<title>AI Real-Time Dog vs Cat Detection</title>
 
 <style>
 
@@ -51,15 +51,13 @@ body::after{
     filter:blur(80px);
 }
 
-/* Main Card */
-
 .container{
     position:relative;
     z-index:10;
 }
 
 .card{
-    width:500px;
+    width:550px;
     padding:35px;
     border-radius:25px;
     background:rgba(255,255,255,0.1);
@@ -68,8 +66,6 @@ body::after{
     text-align:center;
     color:white;
 }
-
-/* Title */
 
 .card h1{
     font-size:32px;
@@ -84,22 +80,15 @@ body::after{
     margin-bottom:20px;
 }
 
-/* Video */
-
 video{
     width:100%;
     border-radius:20px;
     border:3px solid rgba(255,255,255,0.2);
-    margin-top:15px;
 }
-
-/* Hidden Canvas */
 
 canvas{
     display:none;
 }
-
-/* Buttons */
 
 .buttons{
     margin-top:20px;
@@ -125,8 +114,6 @@ button:hover{
     box-shadow:0 0 20px rgba(0,198,255,0.6);
 }
 
-/* Result */
-
 .result{
     margin-top:25px;
 }
@@ -142,12 +129,21 @@ button:hover{
     border:3px solid rgba(255,255,255,0.2);
 }
 
-/* Footer */
-
 .footer{
     margin-top:20px;
     color:#aaaaaa;
     font-size:14px;
+}
+
+.loading{
+    color:#FFD700;
+    animation:blink 1s infinite;
+}
+
+@keyframes blink{
+    50%{
+        opacity:0.5;
+    }
 }
 
 </style>
@@ -160,11 +156,11 @@ button:hover{
 
     <div class="card">
 
-        <h1>🐶🐱 Real-Time Detection</h1>
+        <h1>🐶🐱 AI Real-Time Detection</h1>
 
-        <p>Live Camera Detection using AI Model</p>
+        <p>Live Camera Detection using Machine Learning</p>
 
-        <!-- Live Camera -->
+        <!-- Camera -->
         <video id="video" autoplay playsinline></video>
 
         <!-- Hidden Canvas -->
@@ -177,8 +173,8 @@ button:hover{
                 🎥 Start Camera
             </button>
 
-            <button onclick="captureImage()">
-                📸 Detect
+            <button onclick="captureAndPredict()">
+                🔍 Detect
             </button>
 
         </div>
@@ -191,7 +187,7 @@ button:hover{
         </div>
 
         <div class="footer">
-            Machine Learning SVM Project
+            Machine Learning SVM Web Application
         </div>
 
     </div>
@@ -200,9 +196,9 @@ button:hover{
 
 <script>
 
-/* Camera Access */
-
 const video = document.getElementById('video');
+
+/* Start Camera */
 
 function startCamera(){
 
@@ -224,9 +220,9 @@ function startCamera(){
 
 }
 
-/* Capture Image & Real-Time Detection */
+/* Capture and Predict */
 
-function captureImage(){
+function captureAndPredict(){
 
     const canvas = document.getElementById('canvas');
 
@@ -241,21 +237,46 @@ function captureImage(){
 
     const imageData = canvas.toDataURL('image/png');
 
-    /* Random AI Prediction Demo */
+    result.innerHTML =
+    `<h2 class="loading">🔄 Detecting...</h2>`;
 
-    const prediction =
-    Math.random() > 0.5
-    ? "🐶 Dog Detected"
-    : "🐱 Cat Detected";
+    /* Send Image to Flask Backend */
 
-    result.innerHTML = `
-        <h2>${prediction}</h2>
-        <img src="${imageData}">
-    `;
+    fetch('/predict',{
+
+        method:'POST',
+
+        headers:{
+            'Content-Type':'application/json'
+        },
+
+        body:JSON.stringify({
+            image:imageData
+        })
+
+    })
+
+    .then(response => response.json())
+
+    .then(data => {
+
+        result.innerHTML = `
+            <h2>${data.prediction}</h2>
+            <img src="${imageData}">
+        `;
+
+    })
+
+    .catch(error => {
+
+        result.innerHTML =
+        `<h2>❌ Detection Failed</h2>`;
+
+    });
 
 }
 
-/* Auto Start Camera */
+/* Auto Start */
 
 startCamera();
 
