@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Dog vs Cat Detection</title>
+<title>Real-Time Dog vs Cat Detection</title>
 
 <style>
 
@@ -12,7 +13,7 @@
     margin:0;
     padding:0;
     box-sizing:border-box;
-    font-family:Arial, sans-serif;
+    font-family:Arial,sans-serif;
 }
 
 body{
@@ -24,7 +25,7 @@ body{
     overflow:hidden;
 }
 
-/* Background Animation */
+/* Background Glow */
 
 body::before{
     content:'';
@@ -58,8 +59,8 @@ body::after{
 }
 
 .card{
-    width:450px;
-    padding:40px;
+    width:500px;
+    padding:35px;
     border-radius:25px;
     background:rgba(255,255,255,0.1);
     backdrop-filter:blur(12px);
@@ -68,7 +69,7 @@ body::after{
     color:white;
 }
 
-/* Heading */
+/* Title */
 
 .card h1{
     font-size:32px;
@@ -80,32 +81,35 @@ body::after{
 
 .card p{
     color:#d1d1d1;
-    margin-bottom:25px;
-}
-
-/* Upload Box */
-
-.upload-box{
-    background:white;
-    padding:30px;
-    border-radius:20px;
     margin-bottom:20px;
-    transition:0.3s;
 }
 
-.upload-box:hover{
-    transform:scale(1.02);
-}
+/* Video */
 
-input[type=file]{
+video{
     width:100%;
-    cursor:pointer;
+    border-radius:20px;
+    border:3px solid rgba(255,255,255,0.2);
+    margin-top:15px;
 }
 
-/* Button */
+/* Hidden Canvas */
+
+canvas{
+    display:none;
+}
+
+/* Buttons */
+
+.buttons{
+    margin-top:20px;
+    display:flex;
+    justify-content:center;
+    gap:15px;
+}
 
 button{
-    padding:14px 35px;
+    padding:14px 30px;
     border:none;
     border-radius:30px;
     background:linear-gradient(135deg,#00C6FF,#0072FF);
@@ -129,14 +133,13 @@ button:hover{
 
 .result h2{
     color:#00E5FF;
-    margin-top:15px;
+    margin-bottom:15px;
 }
 
 .result img{
     width:250px;
     border-radius:20px;
     border:3px solid rgba(255,255,255,0.2);
-    margin-top:15px;
 }
 
 /* Footer */
@@ -157,29 +160,33 @@ button:hover{
 
     <div class="card">
 
-        <h1>🐶🐱 Dog vs Cat Detection</h1>
+        <h1>🐶🐱 Real-Time Detection</h1>
 
-        <p>Upload your image to predict Cat or Dog using AI Model</p>
+        <p>Live Camera Detection using AI Model</p>
 
-        <form>
+        <!-- Live Camera -->
+        <video id="video" autoplay playsinline></video>
 
-            <div class="upload-box">
+        <!-- Hidden Canvas -->
+        <canvas id="canvas"></canvas>
 
-                <input type="file" id="fileInput" accept="image/*">
+        <!-- Buttons -->
+        <div class="buttons">
 
-            </div>
-
-            <button type="button" onclick="previewImage()">
-                Predict
+            <button onclick="startCamera()">
+                🎥 Start Camera
             </button>
 
-        </form>
+            <button onclick="captureImage()">
+                📸 Detect
+            </button>
 
+        </div>
+
+        <!-- Result -->
         <div class="result" id="result">
 
-            <h2>Prediction Result</h2>
-
-            <p>Upload image to predict</p>
+            <h2>Waiting for Detection...</h2>
 
         </div>
 
@@ -193,35 +200,64 @@ button:hover{
 
 <script>
 
-function previewImage(){
+/* Camera Access */
 
-    const file = document.getElementById('fileInput').files[0];
+const video = document.getElementById('video');
+
+function startCamera(){
+
+    navigator.mediaDevices.getUserMedia({
+        video:true
+    })
+
+    .then(function(stream){
+
+        video.srcObject = stream;
+
+    })
+
+    .catch(function(error){
+
+        alert("Camera access denied!");
+
+    });
+
+}
+
+/* Capture Image & Real-Time Detection */
+
+function captureImage(){
+
+    const canvas = document.getElementById('canvas');
 
     const result = document.getElementById('result');
 
-    if(file){
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
 
-        const reader = new FileReader();
+    const ctx = canvas.getContext('2d');
 
-        reader.onload = function(e){
+    ctx.drawImage(video,0,0);
 
-            const randomPrediction =
-            Math.random() > 0.5 ? "🐶 Dog Detected" : "🐱 Cat Detected";
+    const imageData = canvas.toDataURL('image/png');
 
-            result.innerHTML = `
-                <h2>${randomPrediction}</h2>
-                <img src="${e.target.result}">
-            `;
-        }
+    /* Random AI Prediction Demo */
 
-        reader.readAsDataURL(file);
+    const prediction =
+    Math.random() > 0.5
+    ? "🐶 Dog Detected"
+    : "🐱 Cat Detected";
 
-    }
-    else{
-        alert("Please upload an image");
-    }
+    result.innerHTML = `
+        <h2>${prediction}</h2>
+        <img src="${imageData}">
+    `;
 
 }
+
+/* Auto Start Camera */
+
+startCamera();
 
 </script>
 
